@@ -1,12 +1,22 @@
 {
-  "name": "backend",
+  "name": "giftwizard-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "start:cluster": "node cluster.js",
+    "prod": "NODE_ENV=production pm2 start server.js -i max",
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "fastify": "^5.2.0",
+    "fastify-redis": "^6.0.0",
+    "fastify-postgres": "^3.0.0",
+    "ioredis": "^5.4.2",
+    "axios": "^1.8.4",
+    "bull": "^4.16.0"
+  }
 }
