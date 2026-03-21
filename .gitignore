@@ -10,3 +10,4 @@ yarn.lock
 .env.local
 .env.production.local
 .env.development.local
+.env.example

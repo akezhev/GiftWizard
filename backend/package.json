@@ -6,10 +6,10 @@
   "scripts": {
     "start": "node index.js",
     "start:cluster": "node cluster.js",
-    "prod": "NODE_ENV=production pm2 start server.js -i max",
+    "prod": "NODE_ENV=production pm2 start server.js -i max"
   },
   "keywords": [],
-  "author": "",
+  "author": "Timur Akezhev",
   "license": "ISC",
   "dependencies": {
     "fastify": "^5.2.0",
