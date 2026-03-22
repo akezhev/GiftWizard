@@ -11,3 +11,54 @@ yarn.lock
 .env.production.local
 .env.development.local
 .env.example
+
+# Build outputs
+dist/
+build/
+*.js.map
+*.css.map
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Database
+*.db
+*.sqlite
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+# SSL certificates
+certbot/conf/
+*.pem
+*.key
+*.crt
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+EOF
