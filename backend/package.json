@@ -1,22 +1,28 @@
+
 {
   "name": "giftwizard-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Highload Gift Recommendation API",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js",
-    "start:cluster": "node cluster.js",
-    "prod": "NODE_ENV=production pm2 start server.js -i max"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "cluster": "node cluster.js",
+    "prod": "NODE_ENV=production node cluster.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js",
+    "docker:build": "docker build -t giftwizard-backend .",
+    "docker:run": "docker run -p 3000:3000 giftwizard-backend"
   },
-  "keywords": [],
+  "keywords": ["gift", "recommendation", "ai", "highload"],
   "author": "Timur Akezhev",
-  "license": "ISC",
-  "dependencies": {
-    "fastify": "^5.2.0",
-    "fastify-redis": "^6.0.0",
-    "fastify-postgres": "^3.0.0",
-    "ioredis": "^5.4.2",
-    "axios": "^1.8.4",
-    "bull": "^4.16.0"
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
   }
 }
