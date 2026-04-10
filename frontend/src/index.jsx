@@ -6,22 +6,20 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import App from './App';
 import './index.css';
 import { registerServiceWorker } from './utils/registerSW';
-import { ErrorBoundary } from './components/ErrorBoundary';
+import { ErrorBoundary } from './components/UI/ErrorBoundary';
 
-// Создаем клиент React Query с оптимизациями
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 минут
-      cacheTime: 10 * 60 * 1000, // 10 минут
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
     },
   },
 });
 
-// Регистрируем Service Worker в production
-if (process.env.NODE_ENV === 'production') {
+if (import.meta.env.PROD) {
   registerServiceWorker();
 }
 
@@ -34,7 +32,7 @@ root.render(
         <BrowserRouter>
           <App />
         </BrowserRouter>
-        {process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
+        {import.meta.env.DEV && <ReactQueryDevtools />}
       </QueryClientProvider>
     </ErrorBoundary>
   </React.StrictMode>
