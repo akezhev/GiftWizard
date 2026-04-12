@@ -8,9 +8,7 @@ const Header = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -30,27 +28,16 @@ const Header = () => {
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-white/95 backdrop-blur-md shadow-lg'
-          : 'bg-gradient-to-r from-purple-600 to-pink-600'
+        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-gradient-to-r from-purple-600 to-pink-600'
       }`}
     >
       <nav className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
-          {/* Logo */}
-          <Link
-            to="/"
-            className="flex items-center space-x-2 text-2xl font-bold transition-transform hover:scale-105"
-          >
-            <Gift
-              className={`w-8 h-8 ${isScrolled ? 'text-purple-600' : 'text-white'}`}
-            />
-            <span className={isScrolled ? 'text-gray-800' : 'text-white'}>
-              GiftWizard
-            </span>
+          <Link to="/" className="flex items-center space-x-2 text-2xl font-bold transition-transform hover:scale-105">
+            <Gift className={`w-8 h-8 ${isScrolled ? 'text-purple-600' : 'text-white'}`} />
+            <span className={isScrolled ? 'text-gray-800' : 'text-white'}>GiftWizard</span>
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-1">
             {navLinks.map(({ path, label, icon: Icon }) => (
               <Link
@@ -72,13 +59,10 @@ const Header = () => {
             ))}
           </div>
 
-          {/* User Actions */}
           <div className="hidden md:flex items-center space-x-4">
             <button
               className={`p-2 rounded-full transition-colors ${
-                isScrolled
-                  ? 'hover:bg-gray-100 text-gray-600'
-                  : 'hover:bg-white/10 text-white'
+                isScrolled ? 'hover:bg-gray-100 text-gray-600' : 'hover:bg-white/10 text-white'
               }`}
               aria-label="Профиль"
             >
@@ -86,7 +70,6 @@ const Header = () => {
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 rounded-lg transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -100,9 +83,8 @@ const Header = () => {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 space-y-2 animate-slideDown">
+          <div className="md:hidden mt-4 pb-4 space-y-2 animate-slide-down">
             {navLinks.map(({ path, label, icon: Icon }) => (
               <Link
                 key={path}

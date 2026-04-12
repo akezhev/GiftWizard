@@ -13,13 +13,7 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
-    // Отправляем ошибку в аналитику
-    if (window.gtag) {
-      window.gtag('event', 'exception', {
-        description: error.message,
-        fatal: true,
-      });
-    }
+    if (window.gtag) window.gtag('event', 'exception', { description: error.message, fatal: true });
   }
 
   handleReset = () => {
@@ -36,20 +30,12 @@ class ErrorBoundary extends React.Component {
               <AlertTriangle className="w-10 h-10 text-red-600" />
             </div>
             <h1 className="text-2xl font-bold mb-2">Что-то пошло не так</h1>
-            <p className="text-gray-600 mb-6">
-              Произошла ошибка в приложении. Пожалуйста, попробуйте перезагрузить страницу.
-            </p>
-            <button
-              onClick={this.handleReset}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors"
-            >
-              Перезагрузить
-            </button>
+            <p className="text-gray-600 mb-6">Произошла ошибка в приложении. Пожалуйста, попробуйте перезагрузить страницу.</p>
+            <button onClick={this.handleReset} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">Перезагрузить</button>
           </div>
         </div>
       );
     }
-
     return this.props.children;
   }
 }
