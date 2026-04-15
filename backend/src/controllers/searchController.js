@@ -1,126 +1,90 @@
-const aiService = require('../services/aiService');
-const QuizResult = require('../models/QuizResult');
+const Gift = require('../models/Gift');
 const { cacheGet, cacheSet } = require('../config/redis');
 const { logger } = require('../monitoring/logger');
 const { AppError } = require('../middleware/errorHandler');
 
-const generateRecommendations = async (req, res, next) => {
+const searchGifts = async (req, res, next) => {
   try {
-    const answers = req.body;
-    const userId = req.user?.id;
+    const { q, category, minPrice, maxPrice, sortBy, limit, offset } = req.query;
     
-    // Validate required fields
-    const required = ['age', 'gender', 'hobby', 'zodiac', 'occasion', 'budget'];
-    for (const field of required) {
-      if (!answers[field]) {
-        throw new AppError(`Missing required field: ${field}`, 400);
-      }
+    if (!q && !category) {
+      throw new AppError('At least one search parameter is required', 400);
     }
     
-    // Check cache first
-    const cacheKey = `quiz:${userId || 'anon'}:${JSON.stringify(answers)}`;
+    // Build cache key
+    const cacheKey = `search:${q || ''}:${category || ''}:${minPrice || ''}:${maxPrice || ''}:${sortBy || ''}:${limit}:${offset}`;
     const cached = await cacheGet(cacheKey);
     if (cached) {
-      logger.info('Quiz result served from cache');
-      return res.json({
-        source: 'cache',
-        gifts: cached.gifts,
-        id: cached.id,
-      });
+      logger.info('Search results served from cache');
+      return res.json(cached);
     }
     
-    // Generate recommendations using AI
-    const recommendations = await aiService.generateGiftRecommendations(answers);
+    let results;
+    if (q) {
+      results = await Gift.search(q, { category, minPrice, maxPrice, sortBy, limit, offset });
+    } else {
+      results = await Gift.findAll({ category, minPrice, maxPrice, sortBy, limit, offset });
+    }
     
-    // Save to database
-    const quizResult = await QuizResult.create({
-      userId,
-      answers,
-      recommendations,
-    });
+    // Cache results for 5 minutes
+    await cacheSet(cacheKey, results, 300);
     
-    // Cache the result
-    await cacheSet(cacheKey, {
-      gifts: recommendations,
-      id: quizResult.id,
-    }, 3600);
-    
-    // Track analytics
-    logger.info('Quiz completed', {
-      userId,
-      age: answers.age,
-      gender: answers.gender,
-      occasion: answers.occasion,
-      recommendationsCount: recommendations.length,
-    });
-    
-    res.json({
-      source: 'ai',
-      gifts: recommendations,
-      id: quizResult.id,
-    });
+    res.json(results);
   } catch (error) {
     next(error);
   }
 };
 
-const getQuizResult = async (req, res, next) => {
+const getGiftDetails = async (req, res, next) => {
   try {
     const { id } = req.params;
     
-    const result = await QuizResult.findById(id);
-    if (!result) {
-      throw new AppError('Quiz result not found', 404);
+    const gift = await Gift.findById(id);
+    if (!gift) {
+      throw new AppError('Gift not found', 404);
     }
     
-    // Check if user owns this result or it's public
-    if (result.user_id && result.user_id !== req.user?.id) {
-      throw new AppError('Access denied', 403);
-    }
-    
-    res.json({
-      id: result.id,
-      answers: result.answers,
-      recommendations: result.recommendations,
-      createdAt: result.created_at,
-    });
+    res.json(gift);
   } catch (error) {
     next(error);
   }
 };
 
-const getUserQuizzes = async (req, res, next) => {
+const getPopularGifts = async (req, res, next) => {
   try {
-    if (!req.user) {
-      throw new AppError('Authentication required', 401);
-    }
+    const { limit = 10 } = req.query;
     
-    const { limit = 10, offset = 0 } = req.query;
-    const quizzes = await QuizResult.findByUserId(req.user.id, limit);
-    
-    res.json({
-      quizzes,
-      total: quizzes.length,
-      limit,
-      offset,
-    });
+    const popular = await Gift.getPopular(limit);
+    res.json(popular);
   } catch (error) {
     next(error);
   }
 };
 
-const getQuizStats = async (req, res, next) => {
+const getCategories = async (req, res, next) => {
   try {
-    const stats = await QuizResult.getStats();
-    res.json(stats);
+    const categories = [
+      { id: 'electronics', name: 'Электроника', icon: 'smartphone', count: 0 },
+      { id: 'clothing', name: 'Одежда и обувь', icon: 'shirt', count: 0 },
+      { id: 'books', name: 'Книги', icon: 'book', count: 0 },
+      { id: 'toys', name: 'Игрушки', icon: 'toy', count: 0 },
+      { id: 'jewelry', name: 'Украшения', icon: 'diamond', count: 0 },
+      { id: 'sports', name: 'Спорт', icon: 'bike', count: 0 },
+      { id: 'beauty', name: 'Красота', icon: 'sparkles', count: 0 },
+      { id: 'home', name: 'Для дома', icon: 'home', count: 0 },
+      { id: 'gift_cards', name: 'Подарочные карты', icon: 'credit-card', count: 0 },
+      { id: 'wellness', name: 'Здоровье', icon: 'heart', count: 0 },
+    ];
+    
+    res.json(categories);
   } catch (error) {
     next(error);
   }
 };
 
 module.exports = {
-  generateRecommendations,
-  getQuizResult,
-  getUserQuizzes,
-  getQuizStats,
+  searchGifts,
+  getGiftDetails,
+  getPopularGifts,
+  getCategories,
 };
