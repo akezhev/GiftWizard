@@ -16,7 +16,7 @@ const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
-// Security middleware
+// Промежуточное программное обеспечение безопасности
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -36,14 +36,14 @@ app.use(cors({
   optionsSuccessStatus: 200,
 }));
 
-// Compression
+// Сжатие
 app.use(compressionMiddleware);
 
-// Body parsing
+// Разбор тела запроса
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Request logging
+// Логирование запросов
 app.use((req, res, next) => {
   logger.info(`${req.method} ${req.path}`, {
     ip: req.ip,
@@ -52,13 +52,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// Metrics
+// Метрики
 if (config.get('monitoring.enabled')) {
   app.use(metricsMiddleware);
   app.get('/metrics', metricsEndpoint);
 }
 
-// Health check
+// Проверка здоровья
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
@@ -68,14 +68,14 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Routes
+// Маршруты
 app.use('/api/quiz', quizRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/geo', geoRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/users', userRoutes);
 
-// Root endpoint
+// Корневой маршрут
 app.get('/', (req, res) => {
   res.json({
     name: 'GiftWizard API',
@@ -85,7 +85,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// Error handling
+// Обработка ошибок
 app.use(notFound);
 app.use(errorHandler);
 
